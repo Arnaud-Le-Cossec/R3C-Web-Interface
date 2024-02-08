@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  postgresql:
+    container_name: postgresr3c
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Hj4ffr8&_77
+      - POSTGRES_DB=r3c_database
+    volumes:
+      - ./r3c-database-init.sql:/docker-entrypoint-initdb.d/r3c-database-init.sql
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - r3c-docker-net
+      
+  mqtt-interface:
+    container_name: mqtt-interface
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    image: mqtt-interface:dev
+    volumes:
+      - type: bind
+        source: ./settings.json
+        target: /mqtt-interface/settings.json
+    restart: unless-stopped
+    depends_on:
+      - postgresql
+    networks:
+      - r3c-docker-net
+
+networks:
+  r3c-docker-net:
+
+volumes:
+  postgres-data: {}
