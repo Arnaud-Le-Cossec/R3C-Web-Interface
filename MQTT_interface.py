@@ -6,6 +6,7 @@
 #******************************************************************************
 
 import paho.mqtt.client as mqtt
+import psycopg2 as psql
 import simplejson as json
 """
 broker_url = 'eu1.cloud.thethings.network'
@@ -34,21 +35,40 @@ def on_connect(client, userdata, flags, rc):
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
-    #print(msg.topic+" "+str(msg.payload))
-    #print(msg.payload)
+    global psql_conn
+    
+    # Decode payload
     data = json.loads(msg.payload)
     battery = data['uplink_message']['decoded_payload']['bat']
     humidity = data['uplink_message']['decoded_payload']['hum']
     temperature = data['uplink_message']['decoded_payload']['temp']
     device_id = data['end_device_ids']['device_id']
     print("device ID = " + device_id + "; bat = " + str(battery) + "; temp = " + str(temperature) +"; humidity = "+ str(humidity))
+    
+    #Create SQL query
+    try:
+        cursor = psql_conn.cursor()
+        sql_request = "INSERT INTO data (device_id,battery,temperature,humidity) VALUES (0x"+ device_id[4:] +","+ str(battery) +","+ str(temperature) +","+ str(humidity) +")"
+        cursor.execute(sql_request)
+        psql_conn.commit()
+        cursor.close()
+        print("Insert done")
+    except Exception as err:
+        print("Error issuing SQL query !")
+        print(err)
+    
+    return    
+    
 
 
 #******************************************************************************
 # MAIN
 #******************************************************************************
 
-#Load settings
+print("Starting MQTT Interface ...")
+
+### Load settings
+
 try:
     file = open("/mqtt-interface/settings.json")
     settings = json.load(file)
@@ -58,24 +78,29 @@ except Exception as err:
     print(err)
     quit()
 
-# Connect to the MQTT brocker
-#client = mqtt.Client()
-#client.on_connect = on_connect
-#client.on_message = on_message
-#client.username_pw_set(broker_username, broker_password)
-#client.connect(broker_url, broker_port)
+
+### Connect to MQTT broker
 
 broker_topic = "v3/"+settings["broker_user"]+"/devices/+/up"
-
-#Connect to MQTT broker
 mqtt_client = mqtt.Client(clean_session=True)
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = on_message
 mqtt_client.username_pw_set(settings["broker_user"],settings["broker_password"])
 mqtt_client.connect(settings["broker_url"], settings["broker_port"])
 
-# Connect to the database
+### Connect to the database
 
+try:
+    psql_conn = psql.connect(database = settings["database_name"],
+                        	host = settings["database_url"],
+                        	port = settings["database_port"],
+                        	user = settings["database_user"],
+                        	password = settings["database_password"])
+    print("Connected to database")
+except Exception as err:
+    print("Failed to connect to database")
+    print(err)
+    quit()
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
