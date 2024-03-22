@@ -32,9 +32,23 @@ services:
       - postgresql
     networks:
       - r3c-docker-net
+      
+  grafana:
+    image: grafana/grafana-oss
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+     - '3000:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./img/R3C_Logo_1.png:/usr/share/grafana/public/img/R3C_Logo_1.png
+      - ./img/logo-iut.png:/usr/share/grafana/public/img/logo-iut.png
+    networks:
+      - r3c-docker-net
 
 networks:
   r3c-docker-net:
 
 volumes:
   postgres-data: {}
+  grafana-storage: {}
