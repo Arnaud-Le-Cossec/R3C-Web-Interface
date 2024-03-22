@@ -82,7 +82,7 @@ except Exception as err:
 ### Connect to MQTT broker
 
 broker_topic = "v3/"+settings["broker_user"]+"/devices/+/up"
-mqtt_client = mqtt.Client(clean_session=True)
+mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, clean_session=True)
 mqtt_client.on_connect = on_connect
 mqtt_client.on_message = on_message
 mqtt_client.username_pw_set(settings["broker_user"],settings["broker_password"])

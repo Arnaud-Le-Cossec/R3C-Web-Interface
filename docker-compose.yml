@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+
+  nginx:
+    container_name: nginx_proxy
+    image: nginx:latest
+    restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 80:80
+    networks:
+      - r3c-docker-net
+
   postgresql:
     container_name: postgresr3c
     image: postgres:latest
@@ -20,8 +32,8 @@ services:
   mqtt-interface:
     container_name: mqtt-interface
     build:
-      context: ./
-      dockerfile: ./Dockerfile
+      context: ./mqtt_interface/
+      dockerfile: Dockerfile
     image: mqtt-interface:dev
     volumes:
       - type: bind
@@ -37,8 +49,8 @@ services:
     image: grafana/grafana-oss
     container_name: grafana
     restart: unless-stopped
-    ports:
-     - '3000:3000'
+    expose:
+     - 3000
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./img/R3C_Logo_1.png:/usr/share/grafana/public/img/R3C_Logo_1.png
