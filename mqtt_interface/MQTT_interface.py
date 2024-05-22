@@ -42,13 +42,14 @@ def on_message(client, userdata, msg):
     battery = data['uplink_message']['decoded_payload']['bat']
     humidity = data['uplink_message']['decoded_payload']['hum']
     temperature = data['uplink_message']['decoded_payload']['temp']
+    rssi = data['uplink_message']['rx_metadata'][0]['rssi']
     device_id = data['end_device_ids']['device_id']
-    print("device ID = " + device_id + "; bat = " + str(battery) + "; temp = " + str(temperature) +"; humidity = "+ str(humidity))
+    print("device ID = " + device_id + "; bat = " + str(battery) + "; temp = " + str(temperature) +"; humidity = "+ str(humidity) + "; RSSI = " +str(rssi))
     
     #Create SQL query
     try:
         cursor = psql_conn.cursor()
-        sql_request = "INSERT INTO data (device_id,battery,temperature,humidity) VALUES (0x"+ device_id[4:] +","+ str(battery) +","+ str(temperature) +","+ str(humidity) +")"
+        sql_request = "INSERT INTO data (device_id,battery,temperature,humidity,rssi) VALUES (\'"+ device_id[4:] +"\',"+ str(battery) +","+ str(temperature) +","+ str(humidity) +","+str(rssi)+")"
         cursor.execute(sql_request)
         psql_conn.commit()
         cursor.close()

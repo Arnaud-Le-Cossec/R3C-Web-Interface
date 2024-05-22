@@ -46,15 +46,17 @@ services:
       - r3c-docker-net
       
   grafana:
-    image: grafana/grafana-oss
+    build:
+      context: ./grafana/
+      dockerfile: Dockerfile
+    image: grafana-r3c:dev
     container_name: grafana
     restart: unless-stopped
     expose:
      - 3000
     volumes:
       - grafana-storage:/var/lib/grafana
-      - ./img/R3C_Logo_1.png:/usr/share/grafana/public/img/R3C_Logo_1.png
-      - ./img/logo-iut.png:/usr/share/grafana/public/img/logo-iut.png
+      - ./grafana/img/:/usr/share/grafana/public/img/r3c/:ro
     networks:
       - r3c-docker-net
 
