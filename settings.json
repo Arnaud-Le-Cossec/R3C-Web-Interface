@@ -2,7 +2,7 @@
     "broker_url":"eu1.cloud.thethings.network",
     "broker_port":1883,
     "broker_user":"r3c-app@ttn",
-    "broker_password":"NNSXS.UKLO6VALTA655HZJISBOC42TCBUBSMIDWZ3EQJI.L6GO3BQ2H6LLYCX3BWUENUI3CPTAR42OFWUMTBOZO44WHZMYAO3A",
+    "broker_password": "password",
     "database_url":"postgresql",
     "database_port":5432,
     "database_name":"r3c_database",
