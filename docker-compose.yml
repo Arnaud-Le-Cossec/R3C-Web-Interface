@@ -22,7 +22,8 @@ services:
       - POSTGRES_PASSWORD=Hj4ffr8&_77
       - POSTGRES_DB=r3c_database
     volumes:
-      - ./r3c-database-init.sql:/docker-entrypoint-initdb.d/r3c-database-init.sql
+      - ./database/r3c-database-init.sql:/docker-entrypoint-initdb.d/r3c-database-init.sql
+      - ./database/current_backup.sql:/r3c-database_backup.sql:rw
       - postgres-data:/var/lib/postgresql/data
     ports:
       - 5432:5432
