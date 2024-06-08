@@ -7,10 +7,22 @@ FROM grafana/grafana-oss:10.3.1
 ## Set Grafana options
 ENV GF_ENABLE_GZIP=true
 ENV GF_USERS_DEFAULT_THEME=dark
+ENV GF_USERS_DEFAULT_LANGUAGE=fr-FR
 
 ## Enable Anonymous Authentication
 ENV GF_AUTH_ANONYMOUS_ENABLED=true
+#Activate the ROLE VIEWER as Default
+ENV GF_AUTH_ANONYMOUS_ORG_ROLE=Viewer
+#Disable the AUTH Method
 ENV GF_AUTH_BASIC_ENABLED=false
+ #Disable the login on show
+ENV GF_AUTH_DISABLE_LOGIN_FORM=true
+#Diabled the menuENV GF_AUTH_BASIC_ENABLED=false #Disable the AUTH Method
+ENV GF_AUTH_DISABLE_SIGNOUT_MENU=true
+#Disable the login on show
+ENV GF_AUTH_DISABLE_LOGIN_FORM=true
+#Diabled the menu
+ENV GF_AUTH_DISABLE_SIGNOUT_MENU=true
 
 ## Disable Sanitize
 ENV GF_PANELS_DISABLE_SANITIZE_HTML=true
@@ -25,11 +37,16 @@ ENV GF_ANALYTICS_CHECK_FOR_UPDATES=false
 ENV GF_SNAPSHOTS_ENABLED=false
 
 ## Set Home Dashboard
-#ENV GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/news.json
+ENV GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/var/lib/grafana/dashboards/R3C_General.json
 
 ## Paths
-#ENV GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
+ENV GF_PATHS_PROVISIONING="/etc/grafana/provisioning"
 #ENV GF_PATHS_PLUGINS="/var/lib/grafana/plugins"
+
+#Add the configuration
+ADD ./provisioning /etc/grafana/provisioning
+#Add the Dashboard
+ADD ./dashboards /var/lib/grafana/dashboards
 
 ENV GF_INSTALL_PLUGINS=volkovlabs-form-panel
 
